@@ -1,0 +1,40 @@
+.block1 {
+    margin-top: 20px;
+    width: 80%;
+}
+
+.block2 {
+    margin-top: 20px;
+    width: 80%;
+    height: 250px;
+}
+
+.block3 {
+    margin-top: 20px;
+    border:2px solid black;
+    width: 100%;
+}
+
+.block4{
+    width: 100%;
+    border:2px solid black;
+    margin-top: 20px;
+}
+
+.block5 {
+    width: 100%;
+    border: 2px solid black;
+    margin-top: 20px;
+}
+
+.g-block-1 {
+    padding-left: 25px;
+    width: 25%;
+    float: left;
+}
+
+.g-block-2 { 
+    padding-right: 25px;
+    width: 75%;
+    float: right;
+}
