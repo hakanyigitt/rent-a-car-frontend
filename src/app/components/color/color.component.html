@@ -2,5 +2,11 @@
     <span class="visually-hidden">Loading...</span>
 </div>
 <ul *ngIf="dataLoaded==true" class="list-group">
-    <li class="list-group-item" *ngFor="let color of colors">{{color.name}}</li>
+    <li (click)="setAllCurrentColor()" 
+    [class]="getAllColorClass()"
+    routerLink="/cars">Tüm Renkler</li>
+    <li (click)="setCurrentColor(color)"
+    routerLink="/cars/color/{{color.id}}" 
+    [class]="getCurrentColorClass(color)"
+    *ngFor="let color of colors">{{color.name}}</li>
 </ul>

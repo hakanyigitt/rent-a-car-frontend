@@ -8,7 +8,9 @@ import { ColorService } from 'src/app/services/color.service';
   styleUrls: ['./color.component.css']
 })
 export class ColorComponent implements OnInit {
+  kontrol:number = 0;
   colors: Color[] = [];
+  currentColor:Color;
   dataLoaded = false;
 
   constructor(private colorService:ColorService) { }
@@ -24,4 +26,28 @@ export class ColorComponent implements OnInit {
     })
   }
 
-}
+  setCurrentColor(color:Color){
+    this.currentColor = color;
+    this.kontrol = 0;
+  }
+
+  setAllCurrentColor(){
+    this.currentColor = {id: -1, name: ""};
+    this.kontrol = 1;
+  }
+
+  getCurrentColorClass(color:Color){
+    if(color == this.currentColor){
+      return "list-group-item active"
+    }else{
+      return "list-group-item"
+    }
+    }
+    getAllColorClass(){
+      if((!this.currentColor) || this.kontrol){
+        return "list-group-item active"
+      }else{
+        return "list-group-item"
+      }
+    }
+  }
