@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Car } from 'src/app/models/car';
+import { CarDetail } from 'src/app/models/carDetail';
+import { CarDetailDto } from 'src/app/models/carDetailDto';
 import { CarService } from 'src/app/services/car.service';
 
 @Component({
@@ -9,7 +10,14 @@ import { CarService } from 'src/app/services/car.service';
   styleUrls: ['./car.component.css']
 })
 export class CarComponent implements OnInit {
-  cars: Car[] = [];
+  cars: CarDetailDto[] = [];
+  carDetail:CarDetail;
+  imgUrl ="https://localhost:44368/Images/"
+  currentCar:CarDetailDto;
+  defaultImage="";
+  carFilter="";
+  colorFilter="";
+  brandFilter="";
   dataLoaded = false;
 
   constructor(private carService:CarService,
@@ -47,5 +55,9 @@ export class CarComponent implements OnInit {
       this.cars = response.data
       this.dataLoaded = true;
     })
+  }
+
+  setCurrentCar(carDetailDto:CarDetailDto){
+    this.currentCar=carDetailDto;
   }
 }

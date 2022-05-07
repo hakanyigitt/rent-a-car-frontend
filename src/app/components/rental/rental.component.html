@@ -4,18 +4,24 @@
 <table *ngIf="dataLoaded==true" class="table">
     <thead>
         <tr>
-            <th>Id</th>        
-            <th>Name</th>
-            <th>Brand Name</th>
-            <th>Rent Date</th>
-            <th>Return Date</th>
+            <th>Id</th> 
+            <th>Marka</th>
+            <th>Model</th>
+            <th>Model Yılı</th>
+            <th>Müşteri adı</th>
+            <th>Günlük ücret</th>
+            <th>Kiralama tarihi</th>
+            <th>Dönüş tarihi</th>
         </tr>
     </thead>
     <tr *ngFor="let rental of rentals">
-        <td>{{rental.id}}</td>
-        <td>{{rental.firstName+ " " +rental.lastName}}</td>
-        <td>{{rental.brandName}}</td>
-        <td>{{rental.rentDate}}</td>
-        <td>{{rental.returnDate}}</td>
+        <td>{{ rental.id }}</td>
+        <td>{{ rental.brandName }}</td>
+        <td>{{ rental.carName }}</td>
+        <td>{{ rental.modelYear }}</td>
+        <td>{{ rental.customerName }}</td>
+        <td>{{ rental.dailyPrice }}</td>
+        <td>{{ rental.rentDate }}</td>
+        <td>{{ rental.returnDate }}</td>
     </tr>
 </table>
