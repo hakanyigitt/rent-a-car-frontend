@@ -1,14 +1,12 @@
-<div>
+<div class="container">
   <app-navi></app-navi>
-</div>
-<div>
-  <div class="g-block-1">
-      <div class="block1"><app-brand></app-brand></div> <div class="block2"><app-color></app-color></div>
+  <div class="row">
+    <div class="col-md-3">
+      <app-brand></app-brand>
+      <app-color></app-color>
+    </div>
+    <div class="col-md-9">
+      <router-outlet></router-outlet>
+    </div>
   </div>
-  <div class="g-block-2">
-      <div class="block3"><router-outlet></router-outlet></div> 
-      <div class="block4"><app-user></app-user></div>
-      <div class="block5"><app-rental></app-rental></div>
-  </div>
-  
 </div>

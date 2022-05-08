@@ -5,52 +5,48 @@ import { BrandService } from 'src/app/services/brand.service';
 @Component({
   selector: 'app-brand',
   templateUrl: './brand.component.html',
-  styleUrls: ['./brand.component.css']
+  styleUrls: ['./brand.component.css'],
 })
 export class BrandComponent implements OnInit {
   brands: Brand[] = [];
   dataLoaded = false;
-  kontrol:number = 0;
-  currentBrand:Brand;
+  currentBrand?:Brand;
+  brandFilterText="";
 
-  constructor(private brandService:BrandService) { }
+  constructor(private brandService: BrandService) {}
 
   ngOnInit(): void {
     this.getBrands();
   }
 
   getBrands() {
-    this.brandService.getBrands().subscribe(response=>{
-      this.brands = response.data
+    this.brandService.getBrands().subscribe((response) => {
+      this.brands = response.data;
       this.dataLoaded = true;
-    })
+    });
   }
 
-  setCurrentBrand(brand: Brand){
+  setCurrentBrand(brand:Brand){
     this.currentBrand = brand;
-    this.kontrol = 0;
   }
 
-  setAllCurrentBrand(){
-    this.currentBrand = {id: -1, name:""}
-    this.kontrol = 1;
+  setDeletedCurrentBrand(){
+    this.currentBrand = undefined;
   }
 
-  getCurrentBrandClass(brand: Brand){
-    if(brand == this.currentBrand){
-      return "list-group-item active"
+  getCurrentBrandClass(brand:Brand){
+    if(brand== this.currentBrand){
+      return 'list-group-item active';
     }else{
-      return "list-group-item"
+      return 'list-group-item';
     }
   }
 
   getAllBrandClass(){
-    if((!this.currentBrand) || this.kontrol){
-      return "list-group-item active"
+    if(!this.currentBrand){
+      return 'list-group-item active';
     }else{
-      return "list-group-item"
+      return 'list-group-item';
     }
   }
-
-  
 }

@@ -1,12 +1,29 @@
-<div *ngIf="dataLoaded==false" class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+<div
+  *ngIf="dataLoaded == false"
+  class="spinner-border text-secondary"
+  role="status"
+>
+  <span class="visually-hidden">Loading...</span>
 </div>
-<ul *ngIf="dataLoaded==true" class="list-group">
-    <li (click)="setAllCurrentBrand()"
-    [class]="getAllBrandClass()"
-    routerLink="/cars">Tüm Markalar</li>
-    <li (click)="setCurrentBrand(brand)"
+<label *ngIf="dataLoaded == true">
+  <h5>Markalar</h5>
+</label>
+
+  <input type="text" [(ngModel)]="brandFilterText" class="form-control" id="brandFilterText" placeholder="Marka">
+
+
+<ul *ngIf="dataLoaded == true" class="list-group">
+  <li 
+  *ngIf="!brandFilterText"
+  (click)="setDeletedCurrentBrand()" 
+  routerLink="/cars"
+  [class]="getAllBrandClass()" >Tüm Markalar</li>
+  <li
+    (click)="setCurrentBrand(brand)"
     routerLink="/cars/brand/{{brand.id}}"
-    [class]="getCurrentBrandClass(brand)" 
-    *ngFor="let brand of brands">{{brand.name}}</li>
+    *ngFor="let brand of brands | brandFilter: brandFilterText"
+    [class]="getCurrentBrandClass(brand)"
+  >
+    {{ brand.name }}
+  </li>
 </ul>

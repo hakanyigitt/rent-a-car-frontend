@@ -1,75 +1,228 @@
 <div
-  id="carouselExampleDark"
-  class="carousel carousel-dark slide"
-  data-bs-ride="carousel"
+  *ngIf="dataLoaded"
+  class="modal fade"
+  id="rentalModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="rentalModalLabel"
+  aria-hidden="true"
 >
-  <div class="carousel-indicators">
-    <button
-      *ngFor="let image of carImages; let i = index"
-      type="button"
-      data-bs-target="#carouselExampleIndicators"
-      attr.data-bs-slide-to="{{ i }}"
-      [class]="getButtonClass(image)"
-      aria-current="true"
-      aria-label="Slide 1"
-    ></button>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rentalModalLabel">Araç Kiralama</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="row carImageAndTitle mb-3">
+          <div name="image" class="col-md-6">
+            <img
+              *ngIf="selectedCarForRental"
+              [src]="getSelectedCarForRentalImageSrc()"
+              class="img rounded float-start"
+              alt="..."
+              width="230px"
+              height="150px"
+            />
+          </div>
+          <div
+            *ngIf="selectedCarForRental"
+            class="carInfo text-center col-md-6"
+          >            
+            <h4 class="mt-4">{{ selectedCarForRental.carName }}</h4>
+            <label class="text-muted"
+              ><strong><u>Ödenecek Tutar</u></strong></label
+            >
+            <h5 *ngIf="!rentalPeriod">{{0 | currency: "":""}}₺</h5>
+            <div *ngIf="rentalPeriod && validateRentalDates == true ">
+              <h5>{{ selectedCarForRental.dailyPrice * rentalPeriod | currency: "":"" }}₺</h5>
+              <p class="text-muted">( {{rentalPeriod}} gün )</p>
+            </div>
+          </div>
+        </div>
+        <form class="form-group row mb-2">
+          <label class="col-md-4 col-form-label text-end"
+            ><strong>Kiralama Tarihi : </strong></label
+          >
+          <div class="col-md-8">
+            <input
+              [(ngModel)]="rentalDate"
+              (ngModelChange)="validateReservationDates(rentalDate, returnDate)"
+              (ngModelChange)="checkIfAnyReservationsBetweenSelectedDates(selectedCarForRental.carId, rentalDate, returnDate)"
+              (ngModelChange)="calculateRentalPeriod()"
+              class="form-control"
+              name="rentalDate"
+              type="date"
+              [min]="getDateNow()"
+            />
+          </div>
+        </form>
+        <form *ngIf="rentalDate" class="form-group row">
+          <label class="col-md-4 col-form-label text-end"
+            ><strong>Teslim Tarihi : </strong></label
+          >
+          <div class="col-md-8">
+            <input
+              [(ngModel)]="returnDate"
+              (ngModelChange)="validateReservationDates(rentalDate, returnDate)"
+              (ngModelChange)="checkIfAnyReservationsBetweenSelectedDates(selectedCarForRental.carId, rentalDate, returnDate)"
+              (ngModelChange)="calculateRentalPeriod()"
+              class="form-control"
+              name="returnDate"
+              type="date"
+              [min]="addDayToDate(convertStringToDate(rentalDate), 1)"
+            />
+          </div>
+        </form>
+      </div>
+
+      <div *ngIf="rentalConfirmation && validateRentalDates===true">
+
+        <div
+          *ngIf="rentalConfirmation.data===false && (convertStringToDate(rentalDate) > convertStringToDate(getDateNow()))">
+          <div *ngIf="rentalPeriod" class="alert alert-danger text-center" role="alert">
+            Araç için seçili tarihler arasında başka bir rezervasyon mevcut
+          </div>
+        </div>
+
+        <div
+          *ngIf="rentalConfirmation.data===false && (convertStringToDate(rentalDate) <= convertStringToDate(getDateNow()))">
+          <div *ngIf="rentalPeriod" class="alert alert-danger text-center" role="alert">
+            Araç daha önce kiralanmış
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <div *ngIf="rentalConfirmation && validateRentalDates===true">
+          <button *ngIf="rentalConfirmation.data===true" (click)="goToPayment()" type="button" class="btn btn-warning">Kirala</button>
+        </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          İptal
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="carousel-inner">
-    <div
-      *ngFor="let carImage of carImages; index as i; first as firstImage"
-      [ngClass]="{ active: firstImage }"
-      class="carousel-item active"
-      data-bs-interval="2000"
-    >
-      <img
-        src="{{ imgUrl }}{{ carImage.imagePath }}"
-        class="d-block w-100"
-        alt="..."
+</div>
+
+<div class="row input-group bg-warning text-dark my-3 py-3 ms-0">
+  <div class="row col-md-8">
+    <div class="col-md-4">
+      <select
+        [(ngModel)]="selectedBrandId"
+        class="form-select form-select-sm"
+        aria-label="Marka"
+        required
+      >
+        <option selected value="0">Tüm Markalar</option>
+        <option *ngFor="let brand of brands" value="{{ brand.id }}">
+          {{ brand.name }}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select
+        [(ngModel)]="selectedColorId"
+        class="form-select form-select-sm"
+        aria-label="Renk"
+      >
+        <option selected value="0">Tüm Renkler</option>
+        <option *ngFor="let color of colors" value="{{ color.id }}">
+          {{color.name}}
+        </option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-sm btn-dark text-warning me-2" (click)="filter()">
+        Filtrele
+      </button>
+      <button
+        class="btn btn-sm btn-dark text-warning"
+        (click)="clearFilter()"
+        role="button"
+      >
+        Temizle
+      </button>
+    </div>
+  </div>
+  <div class="row col-md-4">
+    <div class="col-md-4"></div>
+    <div class="col-md-8">
+      <input
+        type="text"
+        [(ngModel)]="carFilterText"
+        class="form-control form-control-sm"
+        id="carFilterText"
+        placeholder="Araç arama"
       />
     </div>
   </div>
-  <button
-    class="carousel-control-prev"
-    type="button"
-    data-bs-target="#carouselExampleDark"
-    data-bs-slide="prev"
-  >
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Geri</span>
-  </button>
-  <button
-    class="carousel-control-next"
-    type="button"
-    data-bs-target="#carouselExampleDark"
-    data-bs-slide="next"
-  >
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">İleri</span>
-  </button>
 </div>
-<div class="table-responsive-md mt-3">
-  <table class="table table-striped table-hover table-bordered">
-    <thead *ngFor="let car of carDetails">
-      <tr>
-        <th>Marka</th>
-        <td>{{ car.brandName }}</td>
-      </tr>
-      <tr>
-        <th>Renk</th>
-        <td>{{ car.colorName }}</td>
-      </tr>
-      <tr>
-        <th>Model</th>
-        <td>{{ car.modelYear }}</td>
-      </tr>
-      <tr>
-        <th>Günlük ücret</th>
-        <td>{{ car.dailyPrice }} ₺</td>
-      </tr>
-      <tr>
-        <th>Açıklama</th>
-        <td>{{ car.description }}</td>
-      </tr>    
-    </thead>
-  </table>
+
+<div
+  *ngIf="dataLoaded == false"
+  class="spinner-border text-secondary"
+  role="status"
+>
+  <span class="visually-hidden">Loading...</span>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  <div
+    *ngFor="let carDetail of carDetails | carFilter: carFilterText"
+    class="col"
+  >
+    <div class="card">
+      <img
+        [src]="setCurrentCarImageSrc()"
+        [class]="getCurrentCarClass(carDetail)"
+        [alt]="setCurrentCarImageAlt()"
+        height="165px"
+      />
+      <div class="card-body">
+        <h5 class="card-title">{{ carDetail.carName }}</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <b style="float: left; width: 50%; text-align: left">Marka</b>
+            {{ carDetail.brandName }}
+          </li>
+          <li class="list-group-item">
+            <b style="float: left; width: 50%; text-align: left">Renk</b>
+            {{ carDetail.colorName }}
+          </li>
+          <li class="list-group-item">
+            <b style="float: left; width: 50%; text-align: left">Model</b>
+            {{ carDetail.modelYear }}
+          </li>
+          <h5 align="center">{{ carDetail.dailyPrice }} ₺</h5>
+        </ul>
+
+        <div class="d-grid gap-2 d-md-block">
+          <a
+            style="float: left; width: 49%; text-align: center"
+            routerLink="/cars/detail/{{ carDetail.carId }}"
+            class="btn btn-dark"
+            >İncele</a
+          >
+          <button
+            style="float: right; width: 49%; text-align: center"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#rentalModal"
+            (click)="getSelectedCarForRental(carDetail)"
+            class="btn btn-warning"
+          >
+            Kirala
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
